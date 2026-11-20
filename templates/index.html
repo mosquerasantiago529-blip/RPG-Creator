@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Creator | Tu propia leyenda</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<header class="hero">
+    <div class="hero-content">
+        <p>BIENVENIDO A UN NUEVO MUNDO</p>
+        <h1>RPG CREATOR</h1>
+        <h2>Cuatro caminos. Un destino. Tu propia leyenda.</h2>
+        <a href="#crear" class="hero-button">COMENZAR AVENTURA</a>
+        <div class="hero-icons">⚔️ 🐉 🛡️ 🔮</div>
+    </div>
+</header>
+
+<main class="container">
+
+    <section class="form-card" id="crear">
+        <h2>⚔️ CREA TU PERSONAJE</h2>
+        <p>Elige tu destino y comienza tu aventura.</p>
+
+        <form action="/generar" method="post">
+
+            <label for="nombre">Nombre del personaje</label>
+            <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                placeholder="Escribe tu nombre..."
+                required
+                minlength="2"
+            >
+
+            <label for="raza">Selecciona tu raza</label>
+            <select id="raza" name="raza" required>
+                <option value="Humano">Humano</option>
+                <option value="Elfo">Elfo</option>
+                <option value="Enano">Enano</option>
+                <option value="Orco">Orco</option>
+            </select>
+
+            <h3>Selecciona tu clase</h3>
+
+            <div class="class-grid">
+
+                <label class="class-card">
+                    <input type="radio" name="clase_personaje"
+                           value="Guerrero" required>
+                    <img src="/static/personajes/guerrero.png"
+                         alt="Guerrero">
+                    <h3>GUERRERO</h3>
+                    <p>Fuerza y resistencia</p>
+                </label>
+
+                <label class="class-card">
+                    <input type="radio" name="clase_personaje"
+                           value="Mago">
+                    <img src="/static/personajes/mago.png"
+                         alt="Mago">
+                    <h3>MAGO</h3>
+                    <p>Magia y conocimiento</p>
+                </label>
+
+                <label class="class-card">
+                    <input type="radio" name="clase_personaje"
+                           value="Arquero">
+                    <img src="/static/personajes/arquero.png"
+                         alt="Arquero">
+                    <h3>ARQUERO</h3>
+                    <p>Precisión y agilidad</p>
+                </label>
+
+                <label class="class-card">
+                    <input type="radio" name="clase_personaje"
+                           value="Asesino">
+                    <img src="/static/personajes/asesino.png"
+                         alt="Asesino">
+                    <h3>ASESINO</h3>
+                    <p>Sigilo y velocidad</p>
+                </label>
+
+            </div>
+
+            <button type="submit" class="create-button">
+                ✨ CREAR PERSONAJE
+            </button>
+
+        </form>
+    </section>
+
+
+    {% if personaje %}
+
+    <section class="result-card" id="resultado">
+
+        <h2>🏆 TU PERSONAJE HA NACIDO</h2>
+
+        <div class="character-avatar">
+            <img
+                src="/static/personajes/{{ personaje.avatar }}"
+                alt="{{ personaje.clase }}"
+            >
+        </div>
+
+        <h1>{{ personaje.nombre }}</h1>
+
+        <div class="character-info">
+            <div>
+                <span>RAZA</span>
+                <strong>{{ personaje.raza }}</strong>
+            </div>
+
+            <div>
+                <span>CLASE</span>
+                <strong>{{ personaje.clase }}</strong>
+            </div>
+
+            <div>
+                <span>NIVEL</span>
+                <strong>{{ personaje.nivel }}</strong>
+            </div>
+        </div>
+
+
+        <!-- EXPERIENCIA -->
+
+        <div class="experience-section">
+
+            <h3>⭐ EXPERIENCIA</h3>
+
+            <div class="xp-info">
+                <span>{{ personaje.experiencia }} XP</span>
+                <span>{{ personaje.xp_siguiente }} XP</span>
+            </div>
+
+            <div class="xp-bar">
+                <div
+                    class="xp-progress"
+                    style="width: {{ (personaje.experiencia / personaje.xp_siguiente * 100) }}%">
+                </div>
+            </div>
+
+            <p>Próximo nivel: {{ personaje.nivel + 1 }}</p>
+
+            <form action="/ganar-experiencia" method="post">
+                <button type="submit" class="xp-button">
+                    ⚔️ GANAR 25 XP
+                </button>
+            </form>
+
+        </div>
+
+
+        <!-- ESTADISTICAS -->
+
+        <div class="statistics-section">
+            <h2>📊 ESTADÍSTICAS</h2>
+
+            {% for nombre, valor in personaje.estadisticas.items() %}
+
+            <div class="stat-item">
+                <div class="stat-info">
+                    <span>{{ nombre }}</span>
+                    <strong>{{ valor }}</strong>
+                </div>
+
+                <div class="stat-bar">
+                    <div class="stat-progress"
+                         style="width: {{ (valor / (100 if nombre == 'Vitalidad' else 20) * 100) }}%">
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+        </div>
+
+
+        <!-- HABILIDADES -->
+
+        <div class="abilities-section">
+            <h2>🔮 HABILIDADES</h2>
+
+            <div class="abilities-grid">
+                {% for habilidad in personaje.habilidades %}
+                <div class="ability-card">
+                    ✨ {{ habilidad }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </section>
+
+    {% else %}
+
+    <section class="presentation-card">
+        <h2>🌌 TU LEYENDA COMIENZA AQUÍ</h2>
+        <p>Crea tu personaje, gana experiencia y conviértete en una leyenda.</p>
+    </section>
+
+    {% endif %}
+
+</main>
+
+
+<!-- REPRODUCTOR DE MUSICA -->
+
+<div class="music-player">
+
+    <h3>🎵 MÚSICA DEL REINO</h3>
+
+    <select id="musicSelect">
+        <option value="/static/music/epica.mp3">
+            🏰 Música épica
+        </option>
+        <option value="/static/music/mazmorra.mp3">
+            💀 Música de mazmorra
+        </option>
+    </select>
+
+    <button id="musicButton" type="button">
+        ▶ REPRODUCIR
+    </button>
+
+    <label for="volume">VOLUMEN</label>
+
+    <input
+        id="volume"
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        value="0.5"
+    >
+
+    <audio id="gameMusic" loop>
+        <source src="/static/music/epica.mp3" type="audio/mpeg">
+    </audio>
+
+</div>
+
+
+<!-- EFECTOS DE SONIDO -->
+
+<audio id="sonidoCrear" src="/static/sounds/crear.mp3"></audio>
+<audio id="sonidoNivel" src="/static/sounds/nivel.mp3"></audio>
+<audio id="sonidoClase" src="/static/sounds/seleccionar.mp3"></audio>
+
+
+<script>
+
+// MUSICA
+
+const music = document.getElementById("gameMusic");
+const selector = document.getElementById("musicSelect");
+const button = document.getElementById("musicButton");
+const volume = document.getElementById("volume");
+
+music.volume = 0.5;
+
+selector.addEventListener("change", async () => {
+    const estabaReproduciendo = !music.paused;
+
+    music.src = selector.value;
+    music.load();
+
+    if (estabaReproduciendo) {
+        try {
+            await music.play();
+        } catch (error) {
+            console.log("No se pudo reproducir la música");
+        }
+    }
+});
+
+button.addEventListener("click", async () => {
+    if (music.paused) {
+        try {
+            await music.play();
+            button.textContent = "⏸ PAUSAR";
+        } catch (error) {
+            alert("No se pudo reproducir la música.");
+        }
+    } else {
+        music.pause();
+        button.textContent = "▶ REPRODUCIR";
+    }
+});
+
+volume.addEventListener("input", () => {
+    music.volume = Number(volume.value);
+});
+
+
+// EFECTOS
+
+function reproducirSonido(id) {
+    const sonido = document.getElementById(id);
+
+    sonido.currentTime = 0;
+    sonido.play().catch(error => {
+        console.log("No se pudo reproducir el efecto:", error);
+    });
+}
+
+
+// SONIDO AL SELECCIONAR CLASE
+
+document.querySelectorAll(
+    'input[name="clase_personaje"]'
+).forEach(input => {
+
+    input.addEventListener("change", () => {
+        reproducirSonido("sonidoClase");
+    });
+
+});
+
+
+// SONIDO AL CREAR PERSONAJE
+
+{% if personaje %}
+const personajeCreado = "{{ personaje.nombre }}";
+
+if (sessionStorage.getItem("personajeAnterior") !== personajeCreado) {
+    reproducirSonido("sonidoCrear");
+    sessionStorage.setItem("personajeAnterior", personajeCreado);
+}
+{% endif %}
+
+
+// SONIDO AL SUBIR DE NIVEL
+
+{% if personaje %}
+const nivelActual = {{ personaje.nivel }};
+const nivelAnterior = Number(
+    localStorage.getItem("nivelRPG") || nivelActual
+);
+
+if (nivelActual > nivelAnterior) {
+    reproducirSonido("sonidoNivel");
+}
+
+localStorage.setItem("nivelRPG", nivelActual);
+{% endif %}
+
+</script>
+
+
+<footer>
+    <p>⚔️ RPG CREATOR | FORJA TU PROPIA LEYENDA 🐉</p>
+    <p>Desarrollado por Santiago Mosquera</p>
+</footer>
+
+</body>
+</html>
+

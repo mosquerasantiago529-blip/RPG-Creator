@@ -1,4 +1,6 @@
 
+import os
+
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -10,7 +12,10 @@ app = FastAPI(title="RPG Creator")
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key="rpg_creator_clave_secreta_2026"
+    secret_key=os.environ.get(
+        "SECRET_KEY",
+        "clave-desarrollo-local"
+    )
 )
 
 templates = Jinja2Templates(directory="templates")
